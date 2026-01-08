@@ -10,6 +10,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const adminRoutes = require('./routes/admin');
+const botRoutes = require('./routes/bot');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/admin', adminRoutes);
+app.use('/api/bot', botRoutes);
 
 // Home route
 app.get('/', (req, res) => {

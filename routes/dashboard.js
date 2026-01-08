@@ -118,6 +118,15 @@ router.post('/profile/bot-settings', isAuthenticated, async (req, res) => {
     const { botToken, autoAccept, minBlockValue } = req.body;
     const userId = req.session.user.id;
 
+    // Handle JSON request (from dashboard toggle)
+    if (req.headers['content-type'] === 'application/json') {
+      await User.updateBotSettings(userId, {
+        auto_accept: req.body.autoAccept || false
+      });
+      return res.json({ success: true });
+    }
+
+    // Handle form submission
     await User.updateBotSettings(userId, {
       bot_token: botToken,
       auto_accept: autoAccept === 'on',
@@ -130,7 +139,11 @@ router.post('/profile/bot-settings', isAuthenticated, async (req, res) => {
     res.redirect('/dashboard/profile?message=Bot settings updated successfully');
   } catch (error) {
     console.error('Bot settings update error:', error);
-    res.redirect('/dashboard/profile?error=Failed to update bot settings');
+    if (req.headers['content-type'] === 'application/json') {
+      res.status(500).json({ error: 'Failed to update settings' });
+    } else {
+      res.redirect('/dashboard/profile?error=Failed to update bot settings');
+    }
   }
 });
 
