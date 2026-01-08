@@ -1,0 +1,242 @@
+<style>
+  .settings-wrapper { padding: 2rem; max-width: 1400px; margin: 0 auto; background: #f8f9fc; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .settings-header { margin-bottom: 2rem; }
+  .settings-title { font-size: 28px; font-weight: 700; color: #2d3748; margin-bottom: 0.5rem; }
+  .settings-subtitle { color: #6c757d; font-size: 14px; }
+  .tabs-nav { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 2rem; }
+  .tab-btn { padding: 12px 24px; border: none; background: none; color: #6c757d; font-weight: 500; cursor: pointer; position: relative; transition: color 0.2s; }
+  .tab-btn:hover { color: #4e73df; }
+  .tab-btn.active { color: #4e73df; }
+  .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #4e73df; }
+  .settings-card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .section-title { font-size: 18px; font-weight: 700; color: #2d3748; margin-bottom: 0.5rem; }
+  .section-desc { color: #6c757d; font-size: 14px; margin-bottom: 1.5rem; }
+  .proxy-item { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: between; align-items: center; }
+  .proxy-info { flex: 1; }
+  .proxy-url { font-weight: 600; color: #2d3748; margin-bottom: 4px; }
+  .proxy-meta { display: flex; gap: 16px; font-size: 13px; color: #6c757d; }
+  .proxy-badge { display: inline-flex; align-items-center; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; margin-left: 12px; }
+  .badge-active { background: #d4edda; color: #155724; }
+  .badge-paused { background: #f8d7da; color: #721c24; }
+  .proxy-actions { display: flex; gap: 8px; }
+  .icon-btn { width: 32px; height: 32px; border: none; background: none; cursor: pointer; color: #6c757d; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s; }
+  .icon-btn:hover { background: #f8f9fc; color: #4e73df; }
+  .icon-btn.delete:hover { color: #dc3545; }
+  .btn-primary { background: #4e73df; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 14px; }
+  .btn-primary:hover { background: #2e59d9; }
+  .btn-secondary { background: white; color: #4e73df; border: 1px solid #4e73df; padding: 10px 24px; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 14px; }
+  .btn-secondary:hover { background: #f8f9fc; }
+  .add-link { color: #4e73df; text-decoration: none; font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+  .add-link:hover { text-decoration: underline; }
+  .footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+  .footer-left { font-size: 13px; color: #6c757d; }
+  .footer-center { font-size: 13px; color: #6c757d; }
+  .footer-right { display: flex; gap: 12px; }
+  .social-icon { width: 32px; height: 32px; border-radius: 50%; background: #f8f9fc; display: flex; align-items: center; justify-content: center; color: #6c757d; text-decoration: none; }
+  .social-icon:hover { background: #e2e8f0; color: #4e73df; }
+  .form-group { margin-bottom: 1.5rem; }
+  .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2d3748; font-size: 14px; }
+  .form-input { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; color: #2d3748; }
+  .form-input:focus { outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1); }
+  .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 1.5rem; font-size: 14px; }
+  .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+</style>
+
+<div class="settings-wrapper">
+  <% if (locals.message) { %>
+    <div class="alert alert-success"><%= message %></div>
+  <% } %>
+  <% if (locals.error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <div class="settings-header">
+    <h1 class="settings-title">Account Settings</h1>
+    <p class="settings-subtitle">Manage your profile, bot configuration, and notification preferences.</p>
+  </div>
+  
+  <div style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 16px; background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: #4e73df; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 28px;">
+        <%= user.full_name.charAt(0).toUpperCase() %>
+      </div>
+      <div style="flex: 1;">
+        <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #2d3748;"><%= user.full_name %></h3>
+        <p style="margin: 4px 0 0; color: #6c757d; font-size: 14px;"><%= user.email %></p>
+      </div>
+      <div style="text-align: right;">
+        <div style="margin-bottom: 8px;">
+          <span style="font-size: 12px; color: #6c757d;">Status: </span>
+          <span style="font-weight: 600; color: <%= user.license_status === 'active' ? '#28a745' : '#dc3545' %>; text-transform: capitalize;"><%= user.license_status %></span>
+        </div>
+        <div>
+          <span style="font-size: 12px; color: #6c757d;">Role: </span>
+          <span style="font-weight: 600; color: #4e73df; text-transform: capitalize;"><%= user.role %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('profile')">Profile</button>
+    <button class="tab-btn" onclick="showTab('bot')">Bot Settings</button>
+    <button class="tab-btn" onclick="showTab('notifications')">Notifications</button>
+    <button class="tab-btn" onclick="showTab('security')">Security</button>
+  </div>
+
+  <div id="profile-tab" class="tab-content">
+    <div class="settings-card">
+      <h2 class="section-title">Personal Information</h2>
+      <p class="section-desc">Update your account details and contact information.</p>
+
+      <form action="/dashboard/profile/update" method="POST">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-input" value="<%= user.full_name %>" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" value="<%= user.email %>" disabled>
+          <small style="color: #6c757d; font-size: 12px;">Email cannot be changed</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Account Role</label>
+          <input type="text" class="form-input" value="<%= user.role %>" disabled>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">License Expiry</label>
+          <input type="text" class="form-input" value="<%= user.license_expiry ? new Date(user.license_expiry).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Lifetime' %>" disabled>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="bot-tab" class="tab-content" style="display: none;">
+    <div class="settings-card">
+      <h2 class="section-title">Bot Configuration</h2>
+      <p class="section-desc">Configure your Telegram bot token and delivery block settings.</p>
+      
+      <form action="/dashboard/profile/bot-settings" method="POST">
+        <div class="form-group">
+          <label class="form-label">Telegram Bot Token</label>
+          <input type="text" name="botToken" class="form-input" placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz" value="<%= user.bot_token || '' %>">
+          <small style="color: #6c757d; font-size: 12px;">Get your bot token from @BotFather on Telegram</small>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="autoAccept" <%= user.auto_accept ? 'checked' : '' %> style="width: 18px; height: 18px;">
+            <span class="form-label" style="margin: 0;">Automatically accept delivery blocks</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Minimum Block Value ($)</label>
+          <input type="number" name="minBlockValue" class="form-input" placeholder="15.00" value="<%= user.min_block_value || '15.00' %>">
+        </div>
+
+        <button type="submit" class="btn-primary">Save Bot Settings</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="notifications-tab" class="tab-content" style="display: none;">
+    <div class="settings-card">
+      <h2 class="section-title">Notification Preferences</h2>
+      <p class="section-desc">Manage how you receive alerts and updates from the bot.</p>
+      
+      <form action="/dashboard/profile/notifications" method="POST">
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="emailNotif" <%= user.email_notifications ? 'checked' : '' %> style="width: 18px; height: 18px;">
+            <span class="form-label" style="margin: 0;">Email Notifications</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="telegramNotif" <%= user.telegram_notifications ? 'checked' : '' %> style="width: 18px; height: 18px;">
+            <span class="form-label" style="margin: 0;">Telegram Alerts</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="smsNotif" style="width: 18px; height: 18px;">
+            <span class="form-label" style="margin: 0;">SMS Notifications (Coming Soon)</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Preferences</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="security-tab" class="tab-content" style="display: none;">
+    <div class="settings-card">
+      <h2 class="section-title">Change Password</h2>
+      <p class="section-desc">Update your account password for security.</p>
+      
+      <form action="/dashboard/profile/change-password" method="POST">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" name="currentPassword" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" name="newPassword" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" name="confirmPassword" class="form-input" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Update Password</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">
+      <a href="/auth/logout" style="color: #dc3545; text-decoration: none; font-weight: 500;">
+        <span style="margin-right: 6px;">⎋</span> Logout
+      </a>
+    </div>
+    <div class="footer-center">
+      © 2026 BlockFlow Dashboard. All rights reserved.
+    </div>
+    <div class="footer-right">
+      <a href="#" class="social-icon">𝕏</a>
+      <a href="#" class="social-icon">in</a>
+      <a href="#" class="social-icon">ⓘ</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(tabName) {
+  // Hide all tabs
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  
+  // Remove active class from all buttons
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Show selected tab
+  document.getElementById(tabName + '-tab').style.display = 'block';
+  
+  // Add active class to clicked button
+  event.target.classList.add('active');
+}
+</script>

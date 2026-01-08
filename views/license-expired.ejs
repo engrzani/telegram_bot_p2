@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="row justify-content-center min-vh-100 align-items-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card border-warning">
+        <div class="card-body text-center p-5">
+          <i class="bi bi-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+          <h2 class="mt-3"><%= title %></h2>
+          
+          <div class="alert alert-warning mt-4">
+            <p class="mb-0">
+              Your license is currently <strong><%= user.license_status %></strong>. 
+              The monitoring system is paused until your license is activated.
+            </p>
+          </div>
+
+          <% if (user.license_expiry) { %>
+            <p class="text-muted">
+              <i class="bi bi-calendar"></i> 
+              License expiry: <%= new Date(user.license_expiry).toLocaleDateString() %>
+            </p>
+          <% } %>
+
+          <p class="mt-3">
+            Please contact the system administrator to activate or renew your license.
+          </p>
+
+          <div class="mt-4">
+            <a href="/dashboard" class="btn btn-primary">
+              <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="/auth/logout" class="btn btn-outline-secondary">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

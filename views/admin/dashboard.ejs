@@ -1,0 +1,223 @@
+<style>
+  .admin-wrapper { padding: 2rem; max-width: 1400px; margin: 0 auto; background: #f8f9fc; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .admin-header { margin-bottom: 2rem; }
+  .admin-title { font-size: 28px; font-weight: 700; color: #2d3748; margin-bottom: 0.5rem; }
+  .admin-subtitle { color: #6c757d; font-size: 14px; }
+  .admin-card { background: white; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+  .section-title { font-size: 18px; font-weight: 700; color: #2d3748; padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; margin: 0; }
+  .subscribers-table { width: 100%; border-collapse: collapse; }
+  .subscribers-table thead th { padding: 14px 16px; text-align: left; font-size: 11px; font-weight: 600; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; background: #f8f9fc; }
+  .subscribers-table tbody td { padding: 16px; border-bottom: 1px solid #f1f3f5; font-size: 13px; color: #2d3748; vertical-align: middle; }
+  .subscribers-table tbody tr:hover { background: #f8f9fc; }
+  .badge-active { background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block; }
+  .badge-inactive { background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block; }
+  .badge-expired { background: #858796; color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block; }
+  .action-btn { padding: 6px 14px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 6px; }
+  .btn-activate { background: #1cc88a; color: white; }
+  .btn-activate:hover { background: #17a673; }
+  .btn-deactivate { background: #858796; color: white; }
+  .btn-deactivate:hover { background: #6e707e; }
+  .btn-pause { background: #f6c23e; color: white; }
+  .btn-pause:hover { background: #dda20a; }
+  .btn-view-logs { background: white; border: 1px solid #4e73df; color: #4e73df; }
+  .btn-view-logs:hover { background: #f8f9fc; }
+  .config-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 2rem; }
+  .config-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; }
+  .config-card h4 { font-size: 14px; font-weight: 700; color: #2d3748; margin-bottom: 1rem; }
+  .config-row { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 13px; }
+  .config-label { color: #6c757d; }
+  .config-value { font-weight: 600; color: #2d3748; }
+  .notes-section { padding: 2rem; }
+  .notes-text { color: #6c757d; font-size: 14px; line-height: 1.6; margin-bottom: 1rem; }
+  .milestone-section { padding: 1.5rem 2rem; }
+  .milestone-item { display: flex; gap: 12px; margin-bottom: 0.75rem; font-size: 13px; }
+  .milestone-label { color: #6c757d; min-width: 180px; }
+  .milestone-value { font-weight: 600; color: #2d3748; }
+  .footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+  .footer-text { font-size: 13px; color: #6c757d; }
+</style>
+
+<div class="admin-wrapper">
+  <div class="admin-header">
+    <h1 class="admin-title">Admin Panel</h1>
+    <p class="admin-subtitle">Manage user licenses, configurations, and system deployments.</p>
+  </div>
+
+  <!-- Subscriber List -->
+  <div class="admin-card">
+    <h2 class="section-title">Subscriber List</h2>
+    <div style="overflow-x: auto;">
+      <table class="subscribers-table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Last Active (Date)</th>
+            <th>Proxy Status</th>
+            <th>CAPTCHA Service</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (users && users.length > 0) { %>
+            <% users.forEach(u => { 
+              const lastActiveDate = u.updated_at ? new Date(u.updated_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A';
+              const proxyStatus = u.bot_token ? 'Active' : 'Inactive';
+              const captchaService = 'N/A';
+            %>
+            <tr>
+              <td><strong>USER<%= u.id.toString().padStart(3, '0') %></strong></td>
+              <td><%= u.email %></td>
+              <td>
+                <% if (u.license_status === 'active') { %>
+                  <span class="badge-active">Active</span>
+                <% } else if (u.license_status === 'expired') { %>
+                  <span class="badge-expired">Expired</span>
+                <% } else { %>
+                  <span class="badge-inactive">Inactive</span>
+                <% } %>
+              </td>
+              <td><%= lastActiveDate %></td>
+              <td>
+                <% if (proxyStatus === 'Active') { %>
+                  <span class="badge-active">Active</span>
+                <% } else { %>
+                  <span class="badge-inactive">Inactive</span>
+                <% } %>
+              </td>
+              <td><%= captchaService %></td>
+              <td>
+                <% if (u.license_status === 'active') { %>
+                  <button class="action-btn btn-pause" onclick="updateUserStatus(<%= u.id %>, 'inactive')">⏸ Pause</button>
+                  <button class="action-btn btn-deactivate" onclick="updateUserStatus(<%= u.id %>, 'expired')">✕ Expire</button>
+                <% } else if (u.license_status === 'expired') { %>
+                  <button class="action-btn btn-activate" onclick="updateUserStatus(<%= u.id %>, 'active')">✓ Activate</button>
+                <% } else { %>
+                  <button class="action-btn btn-activate" onclick="updateUserStatus(<%= u.id %>, 'active')">✓ Activate</button>
+                <% } %>
+                <button class="action-btn btn-view-logs" onclick="window.location.href='/admin/user/<%= u.id %>/logs'">View Logs</button>
+              </td>
+            </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 3rem; color: #6c757d;">
+                <div style="font-size: 48px; opacity: 0.2; margin-bottom: 1rem;">👥</div>
+                <p style="margin: 0;">No users found</p>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Per-User Configuration Snapshots -->
+  <div class="admin-card">
+    <h2 class="section-title">Per-User Configuration Snapshots</h2>
+    <div class="config-cards">
+      <% users.slice(0, 3).forEach(u => { %>
+      <div class="config-card">
+        <h4><%= u.email %></h4>
+        <div class="config-row">
+          <span class="config-label">Proxy Status:</span>
+          <span class="config-value"><%= u.bot_token ? 'Active' : 'Inactive' %></span>
+        </div>
+        <div class="config-row">
+          <span class="config-label">CAPTCHA Service:</span>
+          <span class="config-value">N/A</span>
+        </div>
+        <div class="config-row">
+          <span class="config-label">License Expiry:</span>
+          <span class="config-value">
+            <% if (u.license_expiry) { %>
+              <%= new Date(u.license_expiry).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) %>
+            <% } else { %>
+              Never
+            <% } %>
+          </span>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Deployment & Setup Notes -->
+  <div class="admin-card">
+    <h2 class="section-title">Deployment & Setup Notes</h2>
+    <div class="notes-section">
+      <p class="notes-text">
+        <strong>Prerequisites for next users (provisioning process):</strong> Prepare the web server provisioning scripts focused on dashboard requirements and monitoring frameworks.
+      </p>
+      <p class="notes-text">
+        <strong>Deployment Notes:</strong>
+      </p>
+      <ul style="color: #6c757d; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 1.5rem;">
+        <li>Auto-Deployment Integration: Configure CI/CD pipeline for automated deployments</li>
+        <li>Bot Worker Binding: Link individual user bots to worker processes</li>
+        <li>Monitoring Dashboard: Real-time status tracking for all active bots</li>
+        <li>Backup & Recovery: Automated daily backups of user configurations and logs</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Milestone Tracking -->
+  <div class="admin-card">
+    <h2 class="section-title">Milestone Tracking</h2>
+    <div class="milestone-section">
+      <div class="milestone-item">
+        <span class="milestone-label">User Authentication Integration:</span>
+        <span class="milestone-value">Completed</span>
+      </div>
+      <div class="milestone-item">
+        <span class="milestone-label">Bot Worker Binding:</span>
+        <span class="milestone-value">In Progress</span>
+      </div>
+      <div class="milestone-item">
+        <span class="milestone-label">Monitoring Dashboard:</span>
+        <span class="milestone-value">Completed</span>
+      </div>
+      <div class="milestone-item">
+        <span class="milestone-label">Recurring Billing Cycle:</span>
+        <span class="milestone-value">Pending</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-text">© 2024 BlockFlow Dashboard. All rights reserved.</div>
+  </div>
+</div>
+
+<script>
+  function updateUserStatus(userId, status) {
+    if (!confirm(`Are you sure you want to change this user's status to ${status}?`)) {
+      return;
+    }
+
+    fetch(`/admin/user/${userId}/status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        status: status,
+        expiry: status === 'active' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('User status updated successfully');
+        location.reload();
+      } else {
+        alert('Failed to update user status: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      alert('Error updating user status: ' + error.message);
+    });
+  }
+</script>

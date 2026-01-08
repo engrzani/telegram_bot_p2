@@ -1,0 +1,197 @@
+<style>
+  * { box-sizing: border-box; }
+  .dashboard-wrapper { padding: 2rem; max-width: 1400px; margin: 0 auto; background: #f8f9fc; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+  .header-controls { display: flex; align-items: center; gap: 1.5rem; }
+  .stat-row { display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .stat-main { flex: 1; display: flex; gap: 1rem; min-width: 0; }
+  .stat-card { flex: 1; background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-width: 200px; }
+  .account-card { width: 280px; background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; }
+  .table-card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+  .stat-icon { font-size: 20px; margin-right: 8px; }
+  .stat-label { color: #6c757d; font-size: 13px; margin-bottom: 0.5rem; }
+  .stat-value { font-size: 32px; font-weight: 700; margin: 0.5rem 0; color: #2d3748; }
+  .stat-change { font-size: 12px; color: #28a745; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: #4e73df; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; flex-shrink: 0; }
+  .btn-stop { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+  .btn-stop:hover { background: #c82333; }
+  .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2196F3; border-radius: 24px; transition: .4s; }
+  .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
+  input:checked + .slider:before { transform: translateX(24px); }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: #f8f9fc; }
+  th { padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #4a5568; border-bottom: 2px solid #e2e8f0; }
+  td { padding: 12px; border-bottom: 1px solid #f1f3f5; font-size: 14px; color: #2d3748; }
+  tbody tr:hover { background: #f8f9fc; }
+  .badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+  .badge-available { background: #f1f3f5; color: #333; }
+  .badge-rejected { background: #dc3545; color: white; }
+  .btn-accept { background: #4e73df; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500; }
+  .btn-accept:hover { background: #2e59d9; }
+  .btn-view { background: white; color: #6c757d; border: 1px solid #dee2e6; padding: 6px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+  .btn-view:hover { background: #f8f9fc; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  @media (max-width: 1200px) {
+    .stat-row { flex-direction: column; }
+    .stat-main { flex-direction: column; }
+    .account-card { width: 100%; }
+  }
+</style>
+
+<div class="dashboard-wrapper">
+  <div class="dashboard-header">
+    <h2 style="font-size: 28px; font-weight: 700; margin: 0; color: #2d3748;">Dashboard</h2>
+    <div class="header-controls">
+      <button class="btn-stop">
+        <span>⏹</span> Stop Bot
+      </button>
+      <span style="font-weight: 700; font-size: 18px; color: #2d3748;">$50.00</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+        <span style="font-weight: 600;">Auto-Accept Status</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-main">
+      <div class="stat-card">
+        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+          <span class="stat-icon">📦</span>
+          <span class="stat-label">Accepted Blocks Today</span>
+        </div>
+        <div class="stat-value">2,350</div>
+        <div class="stat-change">+8% from yesterday</div>
+      </div>
+      <div class="stat-card">
+        <div style="display: flex; align-items-center; margin-bottom: 8px;">
+          <span class="stat-icon">💵</span>
+          <span class="stat-label">Total Payout Earned</span>
+        </div>
+        <div class="stat-value">$12,450.75</div>
+        <div class="stat-change">+2.5% from last month</div>
+      </div>
+      <div class="stat-card">
+        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+          <span class="stat-icon">🧮</span>
+          <span class="stat-label">Average Block Value</span>
+        </div>
+        <div class="stat-value">$5.30</div>
+        <div style="font-size: 12px; color: #6c757d;">Calculated</div>
+      </div>
+    </div>
+    
+    <div class="account-card">
+      <h6 style="font-weight: 700; margin-bottom: 1rem; color: #2d3748;">Account Summary</h6>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+        <div class="avatar"><%= user.full_name.charAt(0).toUpperCase() %></div>
+        <div style="min-width: 0; flex: 1;">
+          <div style="font-weight: 600; font-size: 14px; color: #2d3748; overflow: hidden; text-overflow: ellipsis;"><%= user.full_name %></div>
+          <div style="font-size: 11px; color: #6c757d; overflow: hidden; text-overflow: ellipsis;"><%= user.email %></div>
+        </div>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">License Status</div>
+        <div style="display: flex; align-items: center;">
+          <span style="color: #28a745; margin-right: 6px; font-size: 14px;">✓</span>
+          <span style="font-weight: 600; color: #28a745; font-size: 13px; text-transform: capitalize;"><%= user.license_status %></span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Active Until</div>
+        <div style="font-weight: 600; font-size: 13px; color: #2d3748;">
+          <%= user.license_expiry ? new Date(user.license_expiry).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Lifetime' %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h5 style="font-weight: 700; margin-bottom: 1.5rem; color: #2d3748; font-size: 18px;">Live Delivery Blocks</h5>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Block ID</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Payout</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight: 600;">#BF09876</td>
+            <td>Warehouse A</td>
+            <td>Customer X</td>
+            <td style="font-weight: 600;">$65.20</td>
+            <td>
+              <span class="badge badge-available">
+                <span class="status-dot" style="background: #6c757d;"></span>Available
+              </span>
+            </td>
+            <td><button class="btn-accept">Accept</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">#BF09875</td>
+            <td>Store B</td>
+            <td>Customer Y</td>
+            <td style="font-weight: 600;">$32.00</td>
+            <td>
+              <span class="badge badge-available">
+                <span class="status-dot" style="background: #6c757d;"></span>Accepted
+              </span>
+            </td>
+            <td><button class="btn-view">View</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">#BF09874</td>
+            <td>Depot C</td>
+            <td>Customer Z</td>
+            <td style="font-weight: 600;">$12.50</td>
+            <td>
+              <span class="badge badge-rejected">
+                <span class="status-dot" style="background: white;"></span>Rejected
+              </span>
+            </td>
+            <td><button class="btn-view">View</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">#BF09873</td>
+            <td>Warehouse A</td>
+            <td>Customer W</td>
+            <td style="font-weight: 600;">$48.90</td>
+            <td>
+              <span class="badge badge-available">
+                <span class="status-dot" style="background: #6c757d;"></span>Available
+              </span>
+            </td>
+            <td><button class="btn-accept">Accept</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">#BF09872</td>
+            <td>Store B</td>
+            <td>Customer V</td>
+            <td style="font-weight: 600;">$7.80</td>
+            <td>
+              <span class="badge badge-available">
+                <span class="status-dot" style="background: #6c757d;"></span>Available
+              </span>
+            </td>
+            <td><button class="btn-accept">Accept</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="text-align: right;">
+    <span style="color: #6c757d; font-size: 13px;">Need help? <a href="#" style="color: #4e73df; text-decoration: none; font-weight: 500;">Contact Support</a></span>
+  </div>
+</div>
