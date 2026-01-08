@@ -47,14 +47,17 @@
       <button class="btn-stop">
         <span>⏹</span> Stop Bot
       </button>
-      <span style="font-weight: 700; font-size: 18px; color: #2d3748;">$50.00</span>
+      <span style="font-weight: 700; font-size: 18px; color: #2d3748;">$<%= totalPayout.toFixed(2) %></span>
       <div style="display: flex; align-items: center; gap: 10px;">
         <label class="switch">
-          <input type="checkbox" checked>
+          <input type="checkbox" <%= user.auto_accept ? 'checked' : '' %>>
           <span class="slider"></span>
         </label>
-        <span style="font-weight: 600;">Auto-Accept Status</span>
+        <span style="font-weight: 600;">Auto-Accept</span>
       </div>
+      <a href="/auth/logout" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500;">
+        <span>⏻</span> Logout
+      </a>
     </div>
   </div>
 
@@ -112,80 +115,62 @@
   </div>
 
   <div class="table-card">
-    <h5 style="font-weight: 700; margin-bottom: 1.5rem; color: #2d3748; font-size: 18px;">Live Delivery Blocks</h5>
+    <h5 style="font-weight: 700; margin-bottom: 1.5rem; color: #2d3748; font-size: 18px;">Recent Delivery Blocks</h5>
     <div style="overflow-x: auto;">
       <table>
         <thead>
           <tr>
             <th>Block ID</th>
-            <th>Source</th>
-            <th>Destination</th>
+            <th>Pickup</th>
+            <th>Delivery</th>
             <th>Payout</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th>Time</th>
           </tr>
         </thead>
         <tbody>
+          <% if (recentLogs && recentLogs.length > 0) { %>
+            <% recentLogs.slice(0, 10).forEach(log => { %>
           <tr>
-            <td style="font-weight: 600;">#BF09876</td>
-            <td>Warehouse A</td>
-            <td>Customer X</td>
-            <td style="font-weight: 600;">$65.20</td>
+            <td style="font-weight: 600;"><%= log.block_id || 'N/A' %></td>
+            <td><%= log.pickup_location || 'Not specified' %></td>
+            <td><%= log.delivery_location || 'Not specified' %></td>
+            <td style="font-weight: 600;">$<%= log.payout ? parseFloat(log.payout).toFixed(2) : '0.00' %></td>
             <td>
-              <span class="badge badge-available">
-                <span class="status-dot" style="background: #6c757d;"></span>Available
-              </span>
+              <% if (log.result === 'accepted') { %>
+                <span class="badge" style="background: #d4edda; color: #155724;">
+                  <span class="status-dot" style="background: #28a745;"></span>Accepted
+                </span>
+              <% } else if (log.result === 'ignored') { %>
+                <span class="badge badge-rejected">
+                  <span class="status-dot" style="background: #dc3545;"></span>Ignored
+                </span>
+              <% } else { %>
+                <span class="badge badge-available">
+                  <span class="status-dot" style="background: #6c757d;"></span>Pending
+                </span>
+              <% } %>
             </td>
-            <td><button class="btn-accept">Accept</button></td>
+            <td style="font-size: 12px; color: #6c757d;">
+              <%= log.timestamp ? new Date(log.timestamp).toLocaleString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+              }) : 'N/A' %>
+            </td>
           </tr>
+            <% }) %>
+          <% } else { %>
           <tr>
-            <td style="font-weight: 600;">#BF09875</td>
-            <td>Store B</td>
-            <td>Customer Y</td>
-            <td style="font-weight: 600;">$32.00</td>
-            <td>
-              <span class="badge badge-available">
-                <span class="status-dot" style="background: #6c757d;"></span>Accepted
-              </span>
+            <td colspan="6" style="text-align: center; padding: 3rem; color: #6c757d;">
+              <div style="font-size: 48px; opacity: 0.2; margin-bottom: 1rem;">📦</div>
+              <p style="margin: 0;">No delivery blocks yet</p>
+              <small style="font-size: 12px;">Blocks will appear here when the bot is running</small>
             </td>
-            <td><button class="btn-view">View</button></td>
           </tr>
-          <tr>
-            <td style="font-weight: 600;">#BF09874</td>
-            <td>Depot C</td>
-            <td>Customer Z</td>
-            <td style="font-weight: 600;">$12.50</td>
-            <td>
-              <span class="badge badge-rejected">
-                <span class="status-dot" style="background: white;"></span>Rejected
-              </span>
-            </td>
-            <td><button class="btn-view">View</button></td>
-          </tr>
-          <tr>
-            <td style="font-weight: 600;">#BF09873</td>
-            <td>Warehouse A</td>
-            <td>Customer W</td>
-            <td style="font-weight: 600;">$48.90</td>
-            <td>
-              <span class="badge badge-available">
-                <span class="status-dot" style="background: #6c757d;"></span>Available
-              </span>
-            </td>
-            <td><button class="btn-accept">Accept</button></td>
-          </tr>
-          <tr>
-            <td style="font-weight: 600;">#BF09872</td>
-            <td>Store B</td>
-            <td>Customer V</td>
-            <td style="font-weight: 600;">$7.80</td>
-            <td>
-              <span class="badge badge-available">
-                <span class="status-dot" style="background: #6c757d;"></span>Available
-              </span>
-            </td>
-            <td><button class="btn-accept">Accept</button></td>
-          </tr>
+          <% } %>
         </tbody>
       </table>
     </div>

@@ -8,7 +8,13 @@ const ActivityLog = require('../models/ActivityLog');
 router.get('/', isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.session.user.id);
-    const recentLogs = await ActivityLog.getByUserId(user.id, 10);
+    
+    // Fetch delivery block logs instead of activity logs
+    const db = require('../database/db');
+    const recentLogs = await db.all(
+      'SELECT * FROM delivery_block_logs WHERE user_id = ? ORDER BY timestamp DESC LIMIT 100',
+      [req.session.user.id]
+    );
 
     // Update session with latest user data
     req.session.user.license_status = user.license_status;
