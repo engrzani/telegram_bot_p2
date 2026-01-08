@@ -9,12 +9,19 @@ router.get('/', isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.session.user.id);
     
-    // Fetch delivery block logs instead of activity logs
+    // Fetch delivery block logs
     const db = require('../database/db');
     const recentLogs = await db.all(
       'SELECT * FROM delivery_block_logs WHERE user_id = ? ORDER BY timestamp DESC LIMIT 100',
       [req.session.user.id]
     );
+
+    // Calculate statistics
+    const today = new Date().toISOString().split('T')[0];
+    const acceptedToday = recentLogs.filter(log => log.result === 'accepted' && log.timestamp && log.timestamp.includes(today)).length;
+    const totalAccepted = recentLogs.filter(log => log.result === 'accepted').length;
+    const totalPayout = recentLogs.filter(log => log.result === 'accepted').reduce((sum, log) => sum + (parseFloat(log.payout) || 0), 0);
+    const avgPayout = totalAccepted > 0 ? (totalPayout / totalAccepted) : 0;
 
     // Update session with latest user data
     req.session.user.license_status = user.license_status;
@@ -22,7 +29,13 @@ router.get('/', isAuthenticated, async (req, res) => {
     res.render('dashboard', {
       title: 'Dashboard',
       user: user,
-      recentLogs: recentLogs
+      recentLogs: recentLogs,
+      stats: {
+        acceptedToday,
+        totalAccepted,
+        totalPayout,
+        avgPayout
+      }
     });
   } catch (error) {
     console.error('Dashboard error:', error);
